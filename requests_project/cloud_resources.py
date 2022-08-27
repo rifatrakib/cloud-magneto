@@ -11,13 +11,17 @@ def read_subdomain_env(config, section):
     return subdomain, http_method, endpoint, protocol
 
 
-def collect_cloud_resources(headers):
-    subdomain, http_method, endpoint, protocol = read_subdomain_env("RESOURCE")
+def collect_cloud_resources(config, headers, login_cookies):
+    subdomain, http_method, endpoint, protocol = read_subdomain_env(config, "RESOURCE")
+    base_url = build_base_url(config, subdomain)
+    payload = {"page": 1, "cacheable": True}
+    data = send_request(headers, base_url, endpoint, http_method, protocol, cookies=login_cookies, data=payload)
+    return data
 
 
 def collect_cloud_record(config, headers):
     subdomain, http_method, endpoint, protocol = read_subdomain_env(config, "INFO")
     base_url = build_base_url(config, subdomain)
     parameters = config.get("PARAM")
-    data = send_request(headers, base_url, endpoint, parameters, http_method, protocol)
+    data = send_request(headers, base_url, endpoint, http_method, protocol, parameters=parameters)
     return data
