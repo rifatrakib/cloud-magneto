@@ -1,4 +1,5 @@
 from requests_project.utils import build_base_url
+from requests_project.cloud_store import store_data
 from requests_project.cloud_query import send_request
 
 
@@ -9,6 +10,14 @@ def read_subdomain_env(config, section):
     protocol = config.get("PROTOCOL")
     
     return subdomain, http_method, endpoint, protocol
+
+
+def collect_cloud_pages(config, headers, login_cookies):
+    subdomain, http_method, endpoint, protocol = read_subdomain_env(config, "COUNTER")
+    base_url = build_base_url(config, subdomain)
+    payload = {"default": True, "cacheable": True}
+    data = send_request(headers, base_url, endpoint, http_method, protocol, cookies=login_cookies, data=payload)
+    return data
 
 
 def collect_cloud_resources(config, headers, login_cookies):
