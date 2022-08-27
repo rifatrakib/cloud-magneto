@@ -1,7 +1,8 @@
 from dotenv import dotenv_values
-from requests_project.scraper import call_scraper
+from requests_project.crawler import warm_up, start_crawler
 
 config = dotenv_values(".env")
 
 
-call_scraper(config)
+cookies, headers = warm_up(config)
+start_crawler(config, headers, cookies)

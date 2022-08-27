@@ -10,6 +10,7 @@ def login(config):
     }
     base_url = build_base_url(config, subdomain)
     url = f"{base_url}/login"
+    print(f"{url=}")
     r = requests.post(url, data=login_credentials)
     cookies = r.cookies.get_dict()
     return cookies

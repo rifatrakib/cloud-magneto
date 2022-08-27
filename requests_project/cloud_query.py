@@ -28,10 +28,12 @@ def send_request(headers, base_url, endpoint, http_method, protocol, parameters=
         route = endpoint
     
     url = f"{base_url}/{route}"
-    print(url)
+    print(f"{url=}\t{data=}")
     headers = include_page_headers(base_url, route, headers, http_method, protocol)
     session = create_http2_session(headers, url)
     method = getattr(session, http_method.lower())
+    
     r = method(url, cookies=cookies, json=data)
     data = r.json()
+    
     return data

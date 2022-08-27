@@ -20,10 +20,10 @@ def collect_cloud_pages(config, headers, login_cookies):
     return data
 
 
-def collect_cloud_resources(config, headers, login_cookies):
+def collect_cloud_resources(config, headers, login_cookies, page):
     subdomain, http_method, endpoint, protocol = read_subdomain_env(config, "RESOURCE")
     base_url = build_base_url(config, subdomain)
-    payload = {"page": 1, "cacheable": True}
+    payload = {"page": page}
     data = send_request(headers, base_url, endpoint, http_method, protocol, cookies=login_cookies, data=payload)
     return data
 
