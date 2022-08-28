@@ -17,7 +17,7 @@ def run_crawler(config, headers, cookies, count):
     
     for page in range(1, total_page + 1):
         data = collect_cloud_resources(config, headers, cookies, page)
-        scrape_data(data)
+        scrape_data(config, data)
         sleep(int(config.get("WAITING_PERIOD")))
 
 

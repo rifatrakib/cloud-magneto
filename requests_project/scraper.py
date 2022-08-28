@@ -10,7 +10,12 @@ def get_matching_columns(columns, suffix):
 
 
 def make_non_negative(data):
-    result = data.clip(0, data.max())
+    result = data.where(data < 0, -data)
+    return result
+
+
+def convert_to_datetime(data):
+    result = pd.to_datetime(data, errors="coerce")
     return result
 
 
@@ -21,38 +26,32 @@ def extract_wanted_fields(data):
     return result
 
 
-def scrape_data(data):
+def scrape_data(config, data):
     data = extract_wanted_fields(data)
-    dtypes = {
-        'address': 'str', 'addresses': 'Int64', 'area': 'float64',
-        'arealbruk': 'float64', 'bathrooms': 'Int64', 'buildings': 'Int64',
-        'built_area': 'float64', 'byggeaar': 'float64', 'bygningskategori': 'float64',
-        'city_name': 'str', 'city_number': 'Int64', 'county_name': 'str',
-        'county_number': 'Int64', 'energikarakter': 'float64', 'geometry': 'object',
-        'gnr': 'Int64', 'house_number': 'float64', 'industry_code': 'str',
-        'industry_code_name': 'str', 'lat': 'float64', 'leases': 'Int64',
-        'lnr': 'Int64', 'lon': 'float64', 'oppvarmingskarakter': 'float64',
-        'plots': 'Int64', 'postal_code': 'Int64', 'postal_location': 'str',
-        'property_id': 'Int64', 'property_id_nma': 'str', 'property_type_name': 'str',
-        'purchase_price': 'float64', 'reguleringsformål': 'float64', 'rooms': 'float64',
-        'sections': 'Int64', 'snr': 'Int64', 'street_name': 'str',
-        'transaction_date': 'str', 'type': 'str', 'ufs_home': 'float64',
-        'ufs_other': 'float64', 'ufs_total': 'float64', 'unr': 'Int64',
-        'utilization': 'float64', 'utstedelsesdato': 'float64', 'wcs': 'float64'
-    }
+    link_field = config.get("RECORD_LINK_FIELD")
+    
+    dtypes = {}
+    for item in config.get("RESOUCE_DTYPES").split(","):
+        key, value = item.split("=")
+        dtypes[key] = value
     
     df = pd.DataFrame(data)
     df["sections"] = pd.to_numeric(df["sections"], errors="coerce")
     df = df.astype(dtypes)
     
     date_columns = get_matching_columns(df.columns, "date")
-    for column in date_columns:
-        df[column] = pd.to_datetime(df[column], errors="coerce")
+    df[date_columns] = df[date_columns].apply(convert_to_datetime)
     
     numeric_columns = df.select_dtypes(include=np.number).columns
-    string_columns = filter(lambda x: x == "str", dtypes)
     df[numeric_columns] = df[numeric_columns].apply(make_non_negative)
-    df[string_columns] = df[string_columns].apply(str.lower)
     
+    string_columns = [col for col, dtype in dtypes.items() if dtype == "str" and not col.endswith("_date")]
+    df[string_columns] = df[string_columns].apply(lambda x: x.str.lower())
+    
+    df["record_link_short"] = df[link_field].str.rsplit("-", 2).str.get(0)
+    df["record_link_full"] = df[link_field]
+    
+    df = df.replace({np.nan: None, pd.NA: None})
     data = df.to_dict(orient="records")
+    
     return data
