@@ -1,8 +1,5 @@
-from dotenv import dotenv_values
-from requests_project.crawler import warm_up, start_crawler
-
-config = dotenv_values(".env")
+from requests_project.crawler import authenticate, start_crawler
 
 
-cookies, headers = warm_up(config)
-start_crawler(config, headers, cookies)
+cookies, headers = authenticate()
+start_crawler(headers, cookies)

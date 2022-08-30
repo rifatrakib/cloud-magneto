@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from utils import get_config
 from toolz.dicttoolz import keyfilter
 
 
@@ -26,12 +27,12 @@ def extract_wanted_fields(data):
     return result
 
 
-def scrape_data(config, data):
+def scrape_data(data):
     data = extract_wanted_fields(data)
-    link_field = config.get("RECORD_LINK_FIELD")
+    link_field = get_config("RECORD_LINK_FIELD")
     
     dtypes = {}
-    for item in config.get("RESOUCE_DTYPES").split(","):
+    for item in get_config("RESOUCE_DTYPES").split(","):
         key, value = item.split("=")
         dtypes[key] = value
     

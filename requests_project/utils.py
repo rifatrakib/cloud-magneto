@@ -1,6 +1,9 @@
-def build_base_url(config, subdomain):
-    target_domain = config.get("TARGET_DOMAIN")
-    protocol = config.get("PROTOCOL")
+from utils import get_config
+
+
+def build_base_url(subdomain):
+    target_domain = get_config("TARGET_DOMAIN")
+    protocol = get_config("PROTOCOL")
     return f"{protocol}://{subdomain}.{target_domain}"
 
 
