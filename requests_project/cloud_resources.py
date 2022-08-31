@@ -13,25 +13,25 @@ def read_subdomain_env(section):
     return subdomain, http_method, endpoint, protocol
 
 
-def collect_cloud_pages(headers, login_cookies):
+def collect_cloud_pages():
     subdomain, http_method, endpoint, protocol = read_subdomain_env("COUNTER")
     base_url = build_base_url(subdomain)
     payload = {"default": True, "cacheable": True}
-    data = send_request(headers, base_url, endpoint, http_method, protocol, cookies=login_cookies, data=payload)
+    data = send_request(base_url, endpoint, http_method, protocol, data=payload)
     return data
 
 
-def collect_cloud_resources(headers, login_cookies, page):
+def collect_cloud_resources(page):
     subdomain, http_method, endpoint, protocol = read_subdomain_env("RESOURCE")
     base_url = build_base_url(subdomain)
     payload = {"page": page}
-    data = send_request(headers, base_url, endpoint, http_method, protocol, cookies=login_cookies, data=payload)
+    data = send_request(base_url, endpoint, http_method, protocol, data=payload)
     return data
 
 
-def collect_cloud_record(config, headers):
-    subdomain, http_method, endpoint, protocol = read_subdomain_env(config, "INFO")
-    base_url = build_base_url(config, subdomain)
-    parameters = config.get("PARAM")
-    data = send_request(headers, base_url, endpoint, http_method, protocol, parameters=parameters)
+def collect_cloud_record():
+    subdomain, http_method, endpoint, protocol = read_subdomain_env("INFO")
+    base_url = build_base_url( subdomain)
+    parameters = get_config("PARAM")
+    data = send_request(base_url, endpoint, http_method, protocol, parameters=parameters)
     return data

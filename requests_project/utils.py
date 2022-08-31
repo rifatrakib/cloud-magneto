@@ -23,3 +23,14 @@ def build_static_header(header_string):
         headers[key] = value
     
     return headers
+
+
+def get_headers_and_cookies():
+    cookies = build_static_cookie(get_config("STATIC_COOKIES"))
+    headers = build_static_header(get_config("STATIC_HEADERS"))
+    
+    login_cookies = get_config("login_cookies")
+    if login_cookies:
+        cookies.update(login_cookies)
+    
+    return headers, cookies

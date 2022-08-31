@@ -1,5 +1,6 @@
 import requests
 from hyper.contrib import HTTP20Adapter
+from requests_project.utils import get_headers_and_cookies
 
 
 def include_page_headers(base_url, route, headers, http_method, protocol):
@@ -21,7 +22,8 @@ def create_http2_session(headers, url):
     return session
 
 
-def send_request(headers, base_url, endpoint, http_method, protocol, parameters=None, cookies=None, data=None):
+def send_request(base_url, endpoint, http_method, protocol, parameters=None, data=None):
+    headers, cookies = get_headers_and_cookies()
     if parameters:
         route = f"{endpoint}/{parameters}"
     else:

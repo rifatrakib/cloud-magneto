@@ -1,5 +1,5 @@
 import requests
-from utils import get_config
+from utils import get_config, set_config
 from requests_project.utils import build_base_url
 
 
@@ -12,6 +12,7 @@ def login():
     base_url = build_base_url(subdomain)
     url = f"{base_url}/login"
     print(f"{url=}")
+    
     r = requests.post(url, data=login_credentials)
     cookies = r.cookies.get_dict()
-    return cookies
+    set_config("login_cookies", cookies)
