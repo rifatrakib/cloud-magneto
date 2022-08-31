@@ -1,5 +1,5 @@
 from time import sleep
-from utils import get_config
+from utils import get_config, set_config
 from requests_project.cloud_signin import login
 from requests_project.scraper import scrape_data
 from requests_project.cloud_resources import (
@@ -11,8 +11,8 @@ def initialize_crawler():
     
     if "error" in data:
         print(data)
-        count = authenticate(callback=initialize_crawler)
-        return count
+        _ = authenticate()
+        data = collect_cloud_pages()
     
     return data["count"]
 
@@ -23,14 +23,18 @@ def run_crawler(count):
     
     for page in range(1, total_page + 1):
         data = collect_cloud_resources(page)
+        
+        if "error" in data:
+            print(data)
+            _ = authenticate()
+            data = collect_cloud_resources(page)
+        
         scrape_data(data)
         sleep(int(get_config("WAITING_PERIOD")))
 
 
-def authenticate(callback=None):
+def authenticate():
     login()
-    if callback:
-        return callback()
 
 
 def start_crawler():
