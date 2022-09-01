@@ -25,7 +25,10 @@ def create_http2_session(headers, url):
 def send_request(base_url, endpoint, http_method, protocol, parameters=None, data=None):
     headers, cookies = get_headers_and_cookies()
     if parameters:
-        route = f"{endpoint}/{parameters}"
+        if parameters.startswith("?"):
+            route = f"{endpoint}{parameters}"
+        else:
+            route = f"{endpoint}/{parameters}"
     else:
         route = endpoint
     

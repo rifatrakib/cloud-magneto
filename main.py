@@ -1,5 +1,6 @@
-from requests_project.crawler import authenticate, start_crawler
+from requests_project.cloud_auth import authenticate
+from requests_project.crawler import start_crawler
 
 
-authenticate()
+_ = authenticate()
 start_crawler()

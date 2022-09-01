@@ -2,8 +2,8 @@ from time import sleep
 from utils import get_config
 from requests_project.scraper import scrape_data
 from requests_project.cloud_auth import authenticate
-from requests_project.cloud_resources import (
-    collect_cloud_record, collect_cloud_resources, collect_cloud_pages)
+from requests_project.cloud_records import record_endpoints
+from requests_project.cloud_resources import collect_cloud_resources, collect_cloud_pages
 
 
 def initialize_crawler():
@@ -30,7 +30,9 @@ def run_crawler(count):
             data = collect_cloud_resources(page)
         
         scrape_data(data)
-        sleep(int(get_config("WAITING_PERIOD")))
+        record = record_endpoints(data[4:])
+        # sleep(int(get_config("WAITING_PERIOD")))
+        break
 
 
 def start_crawler():

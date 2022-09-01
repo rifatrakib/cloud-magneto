@@ -29,9 +29,23 @@ def collect_cloud_resources(page):
     return data
 
 
-def collect_cloud_record():
-    subdomain, http_method, endpoint, protocol = read_subdomain_env("INFO")
-    base_url = build_base_url( subdomain)
-    parameters = get_config("PARAM")
-    data = send_request(base_url, endpoint, http_method, protocol, parameters=parameters)
+def collect_cloud_record(section, parameter_data=None, payload=None):
+    parameters = None
+    
+    subdomain, http_method, endpoint, protocol = read_subdomain_env(section)
+    base_url = build_base_url(subdomain)
+    parameter_fields = get_config(f"{section}_PARAM")
+    
+    if parameter_fields:
+        parameter_fields = parameter_fields.split(",")
+        parameter_list = [f"{field}={value}" for field, value in zip(parameter_fields, [parameter_data])]
+        parameters = "&".join(parameter_list)
+        parameters = f"?{parameters}"
+    elif parameter_data:
+        parameters = f"{parameter_data}"
+    
+    data = send_request(
+        base_url, endpoint, http_method, protocol,
+        parameters=parameters, data=payload)
+    
     return data
