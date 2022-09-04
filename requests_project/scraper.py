@@ -11,7 +11,7 @@ def get_matching_columns(columns, suffix):
 
 
 def make_non_negative(data):
-    result = data.where(data < 0, -data)
+    result = data.where(data >= 0, -data)
     return result
 
 
