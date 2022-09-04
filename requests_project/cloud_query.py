@@ -1,5 +1,6 @@
 import requests
 from hyper.contrib import HTTP20Adapter
+from requests_project.cloud_auth import authenticate
 from requests_project.utils import get_headers_and_cookies
 
 
@@ -39,6 +40,14 @@ def send_request(base_url, endpoint, http_method, protocol, parameters=None, dat
     method = getattr(session, http_method.lower())
     
     r = method(url, cookies=cookies, json=data)
-    data = r.json()
+    
+    if r.status_code == 200:
+        data = r.json()
+        if "error" in data and data["error"] == "Not logged in":
+            print(data)
+            _ = authenticate()
+            data = send_request(base_url, endpoint, http_method, protocol, parameters, data)
+    else:
+        data = None
     
     return data
