@@ -30,8 +30,9 @@ def run_crawler(count):
             data = collect_cloud_resources(page)
         
         scrape_data(data)
-        record = record_endpoints(data[4:])
+        records = record_endpoints(data[:4])
         # sleep(int(get_config("WAITING_PERIOD")))
+        print(records)
         break
 
 

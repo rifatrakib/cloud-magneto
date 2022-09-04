@@ -24,7 +24,7 @@ def unpack_query_data(section, records, accessor):
         else:
             query_value = query_value[segment]
     
-    query_value = [str(item) for item in query_value]
+    query_value = set([str(item) for item in query_value])
     
     if multi_value:
         query_value = "%2c".join(query_value)
@@ -63,6 +63,7 @@ def prepare_payload_data(section, record):
 
 
 def record_endpoints(records):
+    details = []
     endpoints = get_config("RECORD_PAGE_ENDPOINTS").split(",")
     dependent_endpoints = {}
     for endpoint in endpoints:
@@ -80,27 +81,28 @@ def record_endpoints(records):
             
             query_parameters = None if payload else query_parameters
             
-            data[endpoint] = collect_cloud_record(
+            data[endpoint.lower()] = collect_cloud_record(
                 endpoint, payload=payload,
                 parameter_data=query_parameters)
         
         for endpoint, source in dependent_endpoints.items():
-            if not data[source]:
+            if not data[source.lower()]:
                 continue
             
-            query_parameters = prepare_query_data(endpoint, data[source])
-            payload = prepare_payload_data(endpoint, data[source])
+            query_parameters = prepare_query_data(endpoint, data[source.lower()])
+            payload = prepare_payload_data(endpoint, data[source.lower()])
             
             query_parameters = None if payload else query_parameters
             print(f"{query_parameters=}")
-            if isinstance(query_parameters, list):
-                data[endpoint] = {}
+            if isinstance(query_parameters, set):
+                data[endpoint.lower()] = {}
                 for q in query_parameters:
-                    data[endpoint][q] = collect_cloud_record(endpoint, payload=payload, parameter_data=q)
+                    data[endpoint.lower()][q] = collect_cloud_record(endpoint, payload=payload, parameter_data=q)
             else:
-                data[endpoint] = collect_cloud_record(
+                data[endpoint.lower()] = collect_cloud_record(
                     endpoint, payload=payload,
                     parameter_data=query_parameters)
-        break
+        
+        details.append({"record": record, "details": data})
     
-    return data
+    return details
