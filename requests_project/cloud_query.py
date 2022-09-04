@@ -43,10 +43,13 @@ def send_request(base_url, endpoint, http_method, protocol, parameters=None, dat
     
     if r.status_code == 200:
         data = r.json()
-        if "error" in data and data["error"] == "Not logged in":
-            print(data)
-            _ = authenticate()
-            data = send_request(base_url, endpoint, http_method, protocol, parameters, data)
+        
+        if isinstance(data, dict):
+            if "error" in data and data["error"] == "Not logged in":
+                print(data)
+                _ = authenticate()
+                data = send_request(
+                    base_url, endpoint, http_method, protocol, parameters, data)
     else:
         data = None
     
