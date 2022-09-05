@@ -64,6 +64,7 @@ def prepare_payload_data(section, record):
 
 def record_endpoints(records):
     details = []
+    identifier_field = get_config("IDENTIFIER")
     endpoints = get_config("RECORD_PAGE_ENDPOINTS").split(",")
     dependent_endpoints = {}
     for endpoint in endpoints:
@@ -103,6 +104,9 @@ def record_endpoints(records):
                     endpoint, payload=payload,
                     parameter_data=query_parameters)
         
-        details.append({"record": record, "details": data})
+        details.append({
+            f"{identifier_field}": record[identifier_field],
+            "record": record, "details": data,
+        })
     
     return details
