@@ -1,4 +1,20 @@
+from pymongo import MongoClient
 from utils import get_config
+
+
+class MongoConnectionManager():
+    def __init__(self, collection):
+        self.client = MongoClient(get_config("MONGO_URI"))
+        self.database = get_config("DATABASE_NAME")
+        self.collection = collection
+    
+    def __enter__(self):
+        self.database = self.client[self.database]
+        self.collection = self.database[self.collection]
+        return self.collection
+    
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        self.client.close()
 
 
 def build_base_url(subdomain):
